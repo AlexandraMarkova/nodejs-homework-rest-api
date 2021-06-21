@@ -1,3 +1,4 @@
+const mongoose = require('mongoose')
 const { HttpCode } = require('../helpers/constants')
 
 const {
@@ -23,8 +24,10 @@ const getAll = async (req, res, next) => {
 
 const getById = async (req, res, next) => {
   try {
-    const contactById = await getContactById(req.params.contactId)
-    if (contactById) {
+    const id = req.params.contactId
+
+    if (mongoose.isValidObjectId(id)) {
+      const contactById = await getContactById(id)
       return res.status(HttpCode.OK).json({
         status: 'success',
         code: HttpCode.OK,
@@ -65,8 +68,8 @@ const create = async (req, res, next) => {
 
 const update = async (req, res, next) => {
   try {
-    const updatedContact = await updateContact(req.params.contactId, req.body)
-    const contact = await getContactById(req.params.contactId)
+    const contact = await updateContact(req.params.contactId, req.body)
+    const updatedContact = await getContactById(req.params.contactId)
     if (contact) {
       return res.status(HttpCode.OK).json({
         status: 'success',
@@ -88,9 +91,7 @@ const update = async (req, res, next) => {
 const remove = async (req, res, next) => {
   try {
     const id = req.params.contactId
-    const contactList = await listContacts()
-    const contactListId = contactList.map((contact) => contact.id)
-    if (contactListId.some((listId) => listId === Number(id))) {
+    if (mongoose.isValidObjectId(id)) {
       // eslint-disable-next-line no-unused-vars
       const contactById = await removeContact(id)
       return res.status(HttpCode.OK).json({
