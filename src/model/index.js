@@ -33,10 +33,8 @@ const removeContact = async (contactId) => {
 }
 
 const addContact = async (body) => {
-  const { name, email, phone } = body
-
   try {
-    const contact = new Contact({ name, email, phone })
+    const contact = new Contact({ ...body })
     await contact.save()
     return contact
   } catch (error) {
@@ -46,29 +44,16 @@ const addContact = async (body) => {
 
 const updateContact = async (contactId, body) => {
   try {
-    const contact = await Contact.findByIdAndUpdate(
-      contactId,
-      {
-        $set: { ...body },
-      },
-      { new: true },
-    )
-    return contact
-  } catch (error) {
-    throw error
-  }
-}
-
-const updateField = async (contactId, body) => {
-  try {
-    const contact = await Contact.findByIdAndUpdate(
-      contactId,
-      {
-        $set: { ...body },
-      },
-      { new: true },
-    )
-    return contact
+    if (mongoose.isValidObjectId(contactId)) {
+      const contact = await Contact.findByIdAndUpdate(
+        contactId,
+        {
+          $set: { ...body },
+        },
+        { new: true },
+      )
+      return contact
+    }
   } catch (error) {
     throw error
   }
@@ -80,5 +65,4 @@ module.exports = {
   removeContact,
   addContact,
   updateContact,
-  updateField,
 }

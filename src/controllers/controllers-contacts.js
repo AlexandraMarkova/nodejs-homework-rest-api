@@ -1,4 +1,3 @@
-// const mongoose = require('mongoose')
 const { HttpCode } = require('../helpers/constants')
 
 const {
@@ -6,8 +5,7 @@ const {
   getContactById,
   removeContact,
   addContact,
-  updateContact,
-  updateField,
+  updateContact
 } = require('../model/index')
 
 const getAll = async (req, res, next) => {
@@ -111,7 +109,7 @@ const update = async (req, res, next) => {
 
 const patchPost = async (req, res, next) => {
   try {
-    const contact = await updateField(req.params.contactId, req.body)
+    const contact = await updateContact(req.params.contactId, req.body)
     if (contact) {
       return res.status(HttpCode.OK).json({
         status: 'success',
@@ -121,7 +119,6 @@ const patchPost = async (req, res, next) => {
     } else {
       return next({
         status: HttpCode.NOT_FOUND,
-        massage: 'missing fields',
         data: 'Not Found',
       })
     }
