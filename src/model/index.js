@@ -1,5 +1,5 @@
 /* eslint-disable no-useless-catch */
-
+const mongoose = require('mongoose')
 const { Contact } = require('../db/contactModel')
 
 const listContacts = async () => {
@@ -12,8 +12,10 @@ const listContacts = async () => {
 }
 const getContactById = async (contactId) => {
   try {
-    const contact = await Contact.findById(contactId)
-    return contact
+    if (mongoose.isValidObjectId(contactId)) {
+      const contact = await Contact.findById(contactId)
+      return contact
+    }
   } catch (error) {
     throw error
   }
@@ -21,8 +23,10 @@ const getContactById = async (contactId) => {
 
 const removeContact = async (contactId) => {
   try {
-    const contact = Contact.findByIdAndRemove(contactId)
-    return contact
+    if (mongoose.isValidObjectId(contactId)) {
+      const contact = await Contact.findByIdAndRemove(contactId)
+      return contact
+    }
   } catch (error) {
     throw error
   }
@@ -41,9 +45,29 @@ const addContact = async (body) => {
 }
 
 const updateContact = async (contactId, body) => {
-  const { name, email, phone } = body
   try {
-    const contact = await Contact.findByIdAndUpdate(contactId, { $set: { name, email, phone } })
+    const contact = await Contact.findByIdAndUpdate(
+      contactId,
+      {
+        $set: { ...body },
+      },
+      { new: true },
+    )
+    return contact
+  } catch (error) {
+    throw error
+  }
+}
+
+const updateField = async (contactId, body) => {
+  try {
+    const contact = await Contact.findByIdAndUpdate(
+      contactId,
+      {
+        $set: { ...body },
+      },
+      { new: true },
+    )
     return contact
   } catch (error) {
     throw error
@@ -56,4 +80,5 @@ module.exports = {
   removeContact,
   addContact,
   updateContact,
+  updateField,
 }
