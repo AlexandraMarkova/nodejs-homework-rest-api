@@ -5,7 +5,7 @@ const {
   getContactById,
   removeContact,
   addContact,
-  updateContact,
+  updateContact
 } = require('../model/index')
 
 const getAll = async (req, res, next) => {
@@ -23,7 +23,8 @@ const getAll = async (req, res, next) => {
 
 const getById = async (req, res, next) => {
   try {
-    const contactById = await getContactById(req.params.contactId)
+    const id = req.params.contactId
+    const contactById = await getContactById(id)
     if (contactById) {
       return res.status(HttpCode.OK).json({
         status: 'success',
@@ -63,36 +64,11 @@ const create = async (req, res, next) => {
   }
 }
 
-const update = async (req, res, next) => {
-  try {
-    const updatedContact = await updateContact(req.params.contactId, req.body)
-    const contact = await getContactById(req.params.contactId)
-    if (contact) {
-      return res.status(HttpCode.OK).json({
-        status: 'success',
-        code: HttpCode.OK,
-        data: { updatedContact },
-      })
-    } else {
-      return next({
-        status: HttpCode.NOT_FOUND,
-        massage: 'missing fields',
-        data: 'Not Found',
-      })
-    }
-  } catch (error) {
-    next(error)
-  }
-}
-
 const remove = async (req, res, next) => {
   try {
     const id = req.params.contactId
-    const contactList = await listContacts()
-    const contactListId = contactList.map((contact) => contact.id)
-    if (contactListId.some((listId) => listId === Number(id))) {
-      // eslint-disable-next-line no-unused-vars
-      const contactById = await removeContact(id)
+    const contactById = await removeContact(id)
+    if (contactById) {
       return res.status(HttpCode.OK).json({
         status: 'success',
         massage: 'contact deleted',
@@ -110,10 +86,52 @@ const remove = async (req, res, next) => {
   }
 }
 
+const update = async (req, res, next) => {
+  try {
+    const contact = await updateContact(req.params.contactId, req.body)
+    if (contact) {
+      return res.status(HttpCode.OK).json({
+        status: 'success',
+        code: HttpCode.OK,
+        data: { contact },
+      })
+    } else {
+      return next({
+        status: HttpCode.NOT_FOUND,
+        massage: 'missing fields',
+        data: 'Not Found',
+      })
+    }
+  } catch (error) {
+    next(error)
+  }
+}
+
+const patchPost = async (req, res, next) => {
+  try {
+    const contact = await updateContact(req.params.contactId, req.body)
+    if (contact) {
+      return res.status(HttpCode.OK).json({
+        status: 'success',
+        code: HttpCode.OK,
+        data: { contact },
+      })
+    } else {
+      return next({
+        status: HttpCode.NOT_FOUND,
+        data: 'Not Found',
+      })
+    }
+  } catch (error) {
+    next(error)
+  }
+}
+
 module.exports = {
   getAll,
   getById,
   create,
   update,
   remove,
+  patchPost,
 }

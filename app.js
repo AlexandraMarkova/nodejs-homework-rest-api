@@ -2,7 +2,7 @@ const express = require('express')
 const cors = require('cors')
 const logger = require('morgan')
 
-const contactsRouter = require('./routes/api/contacts')
+const contactsRouter = require('./src/routes/api/contacts')
 
 const app = express()
 
@@ -13,7 +13,7 @@ app.use(express.json())
 
 app.use('/api/contacts', contactsRouter)
 
-const { HttpCode } = require('./helpers/constants')
+const { HttpCode } = require('./src/helpers/constants')
 
 app.use((req, res, next) => {
   res.status(HttpCode.NOT_FOUND).json({
@@ -33,10 +33,6 @@ app.use((err, req, res, next) => {
     message: err.message,
     data: err.status === 500 ? 'Internal Server Error' : err.data,
   })
-})
-const PORT = process.env.PORT || 8081
-app.listen(PORT, () => {
-  console.log(`Server works at port ${PORT}!`)
 })
 
 module.exports = app

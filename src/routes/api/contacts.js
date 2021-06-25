@@ -7,8 +7,12 @@ const {
   create,
   update,
   remove,
+  patchPost,
 } = require('../../controllers/controllers-contacts')
-const { validation } = require('../../middlewares/validationMiddleware')
+const {
+  validation,
+  patchValidation,
+} = require('../../middlewares/validationMiddleware')
 
 router
   .get('/', getAll)
@@ -16,5 +20,6 @@ router
   .post('/', validation, create)
   .delete('/:contactId', remove)
   .put('/:contactId', validation, update)
+  .patch('/:contactId/favorite', patchValidation, patchPost)
 
 module.exports = router
