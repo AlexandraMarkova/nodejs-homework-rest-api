@@ -1,6 +1,6 @@
 /* eslint-disable no-useless-catch */
 const mongoose = require('mongoose')
-const { Contact } = require('../db/contactModel')
+const { Contact } = require('../schemas/contact')
 
 const listContacts = async () => {
   try {
