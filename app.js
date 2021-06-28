@@ -2,6 +2,7 @@ const express = require('express')
 const cors = require('cors')
 const logger = require('morgan')
 
+const UsersRouter = require('./src/routes/api/users')
 const contactsRouter = require('./src/routes/api/contacts')
 
 const app = express()
@@ -11,6 +12,7 @@ app.use(logger(formatsLogger))
 app.use(cors())
 app.use(express.json())
 
+app.use('/api/users', UsersRouter)
 app.use('/api/contacts', contactsRouter)
 
 const { HttpCode } = require('./src/helpers/constants')
