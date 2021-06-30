@@ -1,19 +1,20 @@
 /* eslint-disable no-useless-catch */
 const mongoose = require('mongoose')
-const { Contact } = require('../db/contactModel')
+const { Contact } = require('../schemas/contact')
 
-const listContacts = async () => {
+const listContacts = async (userId) => {
   try {
-    const data = await Contact.find({})
+    const data = await Contact.find({ owner: userId })
     return data
   } catch (error) {
     return error
   }
 }
-const getContactById = async (contactId) => {
+
+const getContactById = async (contactId, userId) => {
   try {
     if (mongoose.isValidObjectId(contactId)) {
-      const contact = await Contact.findById(contactId)
+      const contact = await Contact.findById(contactId, userId)
       return contact
     }
   } catch (error) {

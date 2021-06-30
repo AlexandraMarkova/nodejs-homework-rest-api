@@ -8,11 +8,14 @@ const {
   update,
   remove,
   patchPost,
-} = require('../../controllers/controllers-contacts')
+} = require('../../controllers/controllersContacts')
 const {
   validation,
   patchValidation,
 } = require('../../middlewares/validationMiddleware')
+const { authMiddleware } = require('../../middlewares/authMiddleware')
+
+router.use(authMiddleware)
 
 router
   .get('/', getAll)

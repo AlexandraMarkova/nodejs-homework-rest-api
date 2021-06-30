@@ -5,12 +5,14 @@ const {
   getContactById,
   removeContact,
   addContact,
-  updateContact
-} = require('../model/index')
+  updateContact,
+} = require('../services/contactService')
 
 const getAll = async (req, res, next) => {
+  const { id } = req.user
+
   try {
-    const contacts = await listContacts()
+    const contacts = await listContacts(id)
     res.status(HttpCode.OK).json({
       status: 'success',
       code: HttpCode.OK,
@@ -22,9 +24,11 @@ const getAll = async (req, res, next) => {
 }
 
 const getById = async (req, res, next) => {
+  const userId = req.user.id
+
   try {
     const id = req.params.contactId
-    const contactById = await getContactById(id)
+    const contactById = await getContactById(id, userId)
     if (contactById) {
       return res.status(HttpCode.OK).json({
         status: 'success',
