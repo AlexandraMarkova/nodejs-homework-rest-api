@@ -9,11 +9,11 @@ const {
   remove,
   patchPost,
 } = require('../../controllers/controllersContacts')
+const { authMiddleware } = require('../../middlewares/authMiddleware')
 const {
   validation,
   patchValidation,
 } = require('../../middlewares/validationMiddleware')
-const { authMiddleware } = require('../../middlewares/authMiddleware')
 
 router.use(authMiddleware)
 
