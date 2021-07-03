@@ -4,6 +4,7 @@ const logger = require('morgan')
 
 const UsersRouter = require('./src/routes/api/users')
 const contactsRouter = require('./src/routes/api/contacts')
+const filesRouter = require('./src/routes/api/files')
 
 const app = express()
 
@@ -14,6 +15,7 @@ app.use(express.json())
 
 app.use('/api/users', UsersRouter)
 app.use('/api/contacts', contactsRouter)
+app.use('/api/users', filesRouter)
 
 const { HttpCode } = require('./src/helpers/constants')
 
