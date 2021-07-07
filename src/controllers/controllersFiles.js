@@ -1,27 +1,21 @@
 const { HttpCode } = require('../helpers/constants')
-const fs = require('fs').promises
-const path = require('path')
-const { v4: uuidv4 } = require('uuid')
+const { updateAvatar } = require('../services/fileService')
 
-const IMG_DIR = path.resolve('./public/avatars')
-
-const uploadController = async (req, res, next) => {
-  console.log(req.file)
-  const [, extension] = req.file.originalname.split('.')
-
-  const fileName = path.join(IMG_DIR, `${uuidv4()}.${extension}`)
+const avatarsController = async (req, res, next) => {
   try {
-    if (req.file) {
-      await fs.rename(req.file.path, fileName)
-      return res.status(HttpCode.OK).json({
-        status: 'success',
-      })
-    }
+    const { id } = req.user
+
+    const url = await updateAvatar(id, req.file)
+
+    res.status(HttpCode.OK).json({
+      status: 'Success',
+      avatarURL: url,
+    })
   } catch (error) {
     next(error)
   }
 }
 
 module.exports = {
-  uploadController,
+  avatarsController,
 }

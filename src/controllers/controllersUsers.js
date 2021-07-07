@@ -20,6 +20,7 @@ const signupController = async (req, res, next) => {
       user: {
         email: newUser.email,
         subscription: Subscription.STARTER,
+        avatarURL: newUser.avatarURL,
       },
     })
   } catch (error) {
@@ -74,9 +75,12 @@ const currentController = async (req, res, next) => {
   }
 }
 
+// const avatarsController = async (req, res, next) => { }
+
 module.exports = {
   signupController,
   loginController,
   logoutController,
   currentController,
+  // avatarsController,
 }

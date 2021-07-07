@@ -1,7 +1,6 @@
 const express = require('express')
 const multer = require('multer')
 const path = require('path')
-// const { v4: uuidv4 } = require('uuid')
 
 const UPLOAD_DIR = path.resolve('./tmp')
 
@@ -15,21 +14,21 @@ const storage = multer.diskStorage({
     cb(null, file.originalname)
   },
 })
-const { uploadController } = require('../../controllers/controllersFiles')
+const { authMiddleware } = require('../../middlewares/authMiddleware')
+
+const {
+  avatarsController,
+} = require('../../controllers/controllersFiles')
 
 const uploadMiddleware = multer({
   storage: storage,
   limits: { fileSize: 1048576 },
-  // fileFilter: (req, file, cb) => {
-  //   if (file.mimetype.includes('image')) {
-  //     cb(null, true)
-  //     return
-  //   }
-  //   cb(null, false)
-  // },
 })
-router.post('/avatars', uploadMiddleware.single('avatar'), uploadController)
-router.use('/avatars', express.static(UPLOAD_DIR))
+
+router
+  // .post('/avatars', uploadMiddleware.single('avatar'), uploadController)
+  // .use('/avatars', express.static(IMG_DIR))
+  .patch('/avatars', authMiddleware, uploadMiddleware.single('avatar'), avatarsController)
 
 module.exports = router
 
