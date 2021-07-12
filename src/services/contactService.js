@@ -5,16 +5,18 @@ const { Contact } = require('../schemas/contact')
 const listContacts = async (userId) => {
   try {
     const data = await Contact.find({ owner: userId })
+    // console.log(data)
     return data
   } catch (error) {
     return error
   }
 }
 
-const getContactById = async (contactId, userId) => {
+const getContactById = async (id, userId) => {
   try {
-    if (mongoose.isValidObjectId(contactId)) {
-      const contact = await Contact.findById(contactId, userId)
+    if (mongoose.isValidObjectId(id)) {
+      const contact = await Contact.findOne({ _id: id, owner: userId })
+      console.log(contact)
       return contact
     }
   } catch (error) {
@@ -22,10 +24,13 @@ const getContactById = async (contactId, userId) => {
   }
 }
 
-const removeContact = async (contactId) => {
+const removeContact = async (id, userId) => {
   try {
-    if (mongoose.isValidObjectId(contactId)) {
-      const contact = await Contact.findByIdAndRemove(contactId)
+    if (mongoose.isValidObjectId(id)) {
+      const contact = await Contact.findOneAndRemove({
+        _id: id,
+        owner: userId,
+      })
       return contact
     }
   } catch (error) {
@@ -33,9 +38,9 @@ const removeContact = async (contactId) => {
   }
 }
 
-const addContact = async (body) => {
+const addContact = async (body, userId) => {
   try {
-    const contact = new Contact({ ...body })
+    const contact = new Contact({ ...body, owner: userId })
     await contact.save()
     return contact
   } catch (error) {
@@ -43,11 +48,11 @@ const addContact = async (body) => {
   }
 }
 
-const updateContact = async (contactId, body) => {
+const updateContact = async (id, body, userId) => {
   try {
-    if (mongoose.isValidObjectId(contactId)) {
-      const contact = await Contact.findByIdAndUpdate(
-        contactId,
+    if (mongoose.isValidObjectId(id)) {
+      const contact = await Contact.findOneAndUpdate(
+        { _id: id, owner: userId },
         {
           $set: { ...body },
         },
