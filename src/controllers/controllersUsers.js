@@ -2,6 +2,7 @@ const { HttpCode, Subscription } = require('../helpers/constants')
 const { User } = require('../schemas/user')
 
 const { signup, login, logout, current } = require('../services/authService')
+const { sendVerifyEmail } = require('../services/emailService')
 
 const signupController = async (req, res, next) => {
   const { email } = req.body
@@ -15,6 +16,13 @@ const signupController = async (req, res, next) => {
   }
   try {
     const newUser = await signup(req.body)
+    const { email, verifyToken } = newUser
+
+    try {
+      await sendVerifyEmail(email, verifyToken)
+    } catch (e) {
+      console.log(e.message)
+    }
     return res.status(HttpCode.CREATED).json({
       status: 'Created',
       user: {
@@ -33,7 +41,6 @@ const loginController = async (req, res, next) => {
   try {
     const newUser = await login(email, password)
 
-    // return
     res.status(HttpCode.OK).json({
       status: 'Success',
       token: newUser.token,
@@ -75,12 +82,59 @@ const currentController = async (req, res, next) => {
   }
 }
 
-// const avatarsController = async (req, res, next) => { }
+const verify = async (req, res, next) => {
+  try {
+    const user = await User.findOne({ verifyToken: req.params.token })
+    if (user) {
+      await User.findByIdAndUpdate(
+        user._id,
+        { verify: true, verifyToken: null }, { new: true }
+      )
+      return res.status(HttpCode.OK).json({
+        status: 'success',
+        code: HttpCode.OK,
+        data: { message: 'Verification successful' },
+      })
+    }
+    return res.status(HttpCode.BAD_REQUEST).json({
+      status: 'error',
+      code: HttpCode.BAD_REQUEST,
+      message: 'Invalid token. Contact to administration',
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+const repeatEmailVerify = async (req, res, next) => {
+  try {
+    const { email } = req.body
+
+    const user = await User.findOne({ email })
+    if (user) {
+      const { verifyToken, email } = user
+      await sendVerifyEmail(verifyToken, email)
+      return res.status(HttpCode.OK).json({
+        status: 'success',
+        code: HttpCode.OK,
+        data: { message: 'Verification email resubmitted' },
+      })
+    }
+    return res.status(HttpCode.NOT_FOUND).json({
+      status: 'error',
+      code: HttpCode.NOT_FOUND,
+      message: 'User not found',
+    })
+  } catch (error) {
+    next(error)
+  }
+}
 
 module.exports = {
   signupController,
   loginController,
   logoutController,
   currentController,
-  // avatarsController,
+  verify,
+  repeatEmailVerify,
 }

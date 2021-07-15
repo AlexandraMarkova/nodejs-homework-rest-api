@@ -6,7 +6,8 @@ const {
   loginController,
   logoutController,
   currentController,
-  // avatarsController,
+  verify,
+  repeatEmailVerify,
 } = require('../../controllers/controllersUsers')
 const { authMiddleware } = require('../../middlewares/authMiddleware')
 const { userValidation } = require('../../middlewares/validationMiddleware')
@@ -16,6 +17,7 @@ router
   .post('/login', userValidation, loginController)
   .post('/logout', authMiddleware, logoutController)
   .get('/current', authMiddleware, currentController)
-  // .patch('/avatars', authMiddleware, avatarsController)
+  .get('/verify/:token', verify)
+  .post('/verify', repeatEmailVerify)
 
 module.exports = router
