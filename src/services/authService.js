@@ -21,6 +21,9 @@ const signup = async (body) => {
 const login = async (email, password) => {
   try {
     const user = await User.findOne({ email })
+    if (!user.verify) {
+      throw new CustomError(HttpCode.UNAUTHORIZED, 'Invalid credentials')
+    }
     if (!user || !user.validPassport(password)) {
       throw new CustomError(HttpCode.UNAUTHORIZED, 'Email or password is wrong')
     }
